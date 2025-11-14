@@ -23,7 +23,11 @@ repeat while (GPS connected) is (no) not (yes)
 :Stop running;
 :Cool down;
 :Go home;
-:take off shoes;
+:Rest;
+:Take off shoes;
+:Drink water;
+:Shower;
+
 
 
 
