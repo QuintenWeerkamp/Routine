@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <DUT Name="HardloopStates" Id="{ca075d44-347a-4c24-a521-7a9b74f5dba5}">
+    <Declaration><![CDATA[TYPE HardloopState :
+STRUCT:	
+	Omkleden,
+	Muziek,
+	GPS,
+	Start,
+	1km,
+	2km,
+	3km,
+	Stop,
+	GPS stop,
+	Uitkleden,
+	)
+	
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

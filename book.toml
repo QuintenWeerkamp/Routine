@@ -1,0 +1,8 @@
+[book]
+authors = ["352702"]
+language = "en"
+src = "src"
+title = "Routine MDBook"
+
+[preprocessor.plantuml]
+plantuml-cmd='http://localhost:8080'
