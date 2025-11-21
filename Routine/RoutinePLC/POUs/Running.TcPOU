@@ -3,14 +3,60 @@
   <POU Name="Running" Id="{595a4fa8-c535-4084-8182-3622c9324e38}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM Running
 VAR
+entryR1:BOOL:=FALSE;	
+	CheckWeather: BOOL;
+	WeatherClear: BOOL;
 	
+	ChangeClothes: BOOL;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[State.RunningState]]></ST>
+      <ST><![CDATA[
+CASE Runningstates OF
+Runningstates.Preparation:
+IF entryR1 = TRUE THEN
+CheckWeather := TRUE;
+entryR1 := FALSE;
+END_IF
+
+IF CheckWeather = TRUE AND WeatherClear = TRUE THEN
+CheckWeather := FALSE;
+ChangeClothes := TRUE;
+END_IF
+
+IF Changeclothes = TRUE THEN
+ChangeClothes := FALSE;
+
+END_IF
+
+
+	
+END_CASE
+
+]]></ST>
     </Implementation>
     <LineIds Name="Running">
+      <LineId Id="21" Count="0" />
+      <LineId Id="15" Count="0" />
       <LineId Id="5" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="27" Count="2" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="39" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="10" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

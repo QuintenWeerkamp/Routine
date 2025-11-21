@@ -3,7 +3,9 @@
   <GVL Name="GVL" Id="{f0f7fe03-104c-4ac5-8c8b-0428b6b36959}">
     <Declaration><![CDATA[{attribute 'qualified_only'}
 VAR_GLOBAL
-	RunningStates : RunningStates :=RunningStates.Running.Preparation;
+	RunningStates : RunningStates :=RunningStates.Preparation;
+	Checkprint : BOOL := FALSE;
+	
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>
