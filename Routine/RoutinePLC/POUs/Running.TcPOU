@@ -8,11 +8,18 @@ entryR1:BOOL:=FALSE;
 	WeatherClear: BOOL;
 	
 	ChangeClothes: BOOL;
+	WatchOn: BOOL;
+	EarbudsConnected: BOOL;
+	MusicPlaying: BOOL;
+	SearchGps: BOOL;
+	EntryR2: BOOL;
+	RunningShoesOn: BOOL;
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[
 CASE Runningstates OF
+
 Runningstates.Preparation:
 IF entryR1 = TRUE THEN
 CheckWeather := TRUE;
@@ -22,13 +29,37 @@ END_IF
 IF CheckWeather = TRUE AND WeatherClear = TRUE THEN
 CheckWeather := FALSE;
 ChangeClothes := TRUE;
+WatchOn:= TRUE;
+EarbudsConnected :=TRUE;
+MusicPlaying := TRUE;
+
 END_IF
 
-IF Changeclothes = TRUE THEN
+IF Changeclothes = TRUE AND WatchOn= TRUE AND EarbudsConnected =TRUE AND MusicPlaying = TRUE THEN
 ChangeClothes := FALSE;
+WatchOn:= FALSE;    
+EarbudsConnected :=FALSE;
+MusicPlaying := FALSE;
+gvl.CheckPrint := TRUE;
 
 END_IF
 
+IF gvl.Layer1Good = TRUE THEN
+SearchGps := TRUE;
+EntryR2 := TRUE;	
+END_IF
+
+IF SearchGPS = TRUE AND EntryR2 = TRUE THEN
+EntryR2 := FALSE;
+RunningShoesOn:= TRUE;	
+END_IF
+
+IF RunningShoesOn = TRUE THEN
+RunningStates := RunningStates.Warmup;	
+END_IF
+
+
+RunningStates.WarmUp:
 
 	
 END_CASE
@@ -38,6 +69,7 @@ END_CASE
     <LineIds Name="Running">
       <LineId Id="21" Count="0" />
       <LineId Id="15" Count="0" />
+      <LineId Id="42" Count="0" />
       <LineId Id="5" Count="0" />
       <LineId Id="13" Count="0" />
       <LineId Id="19" Count="0" />
@@ -45,14 +77,32 @@ END_CASE
       <LineId Id="24" Count="0" />
       <LineId Id="26" Count="0" />
       <LineId Id="30" Count="0" />
+      <LineId Id="43" Count="1" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="48" Count="0" />
       <LineId Id="20" Count="0" />
       <LineId Id="35" Count="0" />
       <LineId Id="17" Count="0" />
-      <LineId Id="37" Count="0" />
-      <LineId Id="41" Count="0" />
+      <LineId Id="51" Count="2" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="64" Count="0" />
+      <LineId Id="60" Count="0" />
       <LineId Id="38" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="66" Count="1" />
+      <LineId Id="69" Count="0" />
       <LineId Id="40" Count="0" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="63" Count="0" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="71" Count="0" />
+      <LineId Id="73" Count="1" />
+      <LineId Id="76" Count="1" />
       <LineId Id="39" Count="0" />
+      <LineId Id="78" Count="0" />
       <LineId Id="36" Count="0" />
       <LineId Id="18" Count="0" />
       <LineId Id="11" Count="0" />

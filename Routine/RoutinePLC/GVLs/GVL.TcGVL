@@ -4,7 +4,9 @@
     <Declaration><![CDATA[{attribute 'qualified_only'}
 VAR_GLOBAL
 	RunningStates : RunningStates :=RunningStates.Preparation;
-	Checkprint : BOOL := FALSE;
+	CheckPrint : BOOL := FALSE;
+	Layer1Good : BOOL := FALSE;
+	
 	
 END_VAR]]></Declaration>
   </GVL>
