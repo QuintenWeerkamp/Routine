@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Refactors>
+  <Renames>
+    <RenamedType>
+      <Type guid="595a4fa8-c535-4084-8182-3622c9324e38">HARDLOPEN</Type>
+      <From>Hardlopen</From>
+      <To>Running</To>
+    </RenamedType>
+  </Renames>
+</Refactors>

@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <GVL Name="GVL" Id="{f0f7fe03-104c-4ac5-8c8b-0428b6b36959}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	RunningStates : RunningStates :=RunningStates.Running.Preparation;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

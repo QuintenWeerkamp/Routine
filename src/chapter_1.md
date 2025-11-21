@@ -2,6 +2,7 @@
 ```plantuml
 @startuml
 start
+Group Preperation
 :Check weather;
 if (Is it dry?) then (no)
 stop
@@ -13,15 +14,21 @@ endif
 :Play music;
 :Search GPS;
 :Put on running shoes;
+end group
+Group Warm-up
 :Go outside;
 repeat
 repeat while (GPS connected) is (no) not (yes)
 :Start Warm-up;
+End group
+Group Running
 :Start Running;
 :Ran 1km\nCheck time;
 :Ran 2km\nCheck time;
 :Ran 10km;
 :Stop running;
+end group
+Group End run
 :Cool down;
 :Go home;
 :Rest;
@@ -29,7 +36,7 @@ repeat while (GPS connected) is (no) not (yes)
 :Drink water;
 :Check Print;
 :Shower;
-
+end group
 
 
 
