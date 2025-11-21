@@ -1,0 +1,37 @@
+``plantuml
+@startuml
+Start
+:Make CAD Model;
+:Convert to stl-file;
+:Preheat printer;
+Repeat
+:Set/Change printer settings;
+backward:Stop print;
+:Slice print;
+:Put file on sd-card;
+:Put SD-card in printer;
+Repeat
+backward:Wait a minute;
+repeat while (Printer up to Temperature) is (no) not (yes)
+:Start print;
+:Check first layer;
+Repeat while (First layer failed?) is (yes) not (no)
+:Continue print;
+Repeat
+backward:wait;
+repeat while (Print finished?) is (no) not (yes)
+If (Print succeeded?) then (no)
+:Remove print;
+:Clean bed;
+:Start over;
+stop
+Else (yes)
+:Remove print;
+:Clean bed;
+:Remove exces\nmaterial from print;
+stop
+
+endif
+
+@enduml
+```
