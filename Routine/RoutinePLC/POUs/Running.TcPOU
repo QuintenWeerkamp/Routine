@@ -3,9 +3,10 @@
   <POU Name="Running" Id="{595a4fa8-c535-4084-8182-3622c9324e38}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM Running
 VAR
-entryR1:BOOL:=FALSE;	
+	entryR1:BOOL:=FALSE;	
 	CheckWeather: BOOL;
-	WeatherClear: BOOL;
+	WeatherClear: BOOL := TRUE;
+	Timer1 : TON ;
 	
 	ChangeClothes: BOOL;
 	WatchOn: BOOL;
@@ -14,17 +15,31 @@ entryR1:BOOL:=FALSE;
 	SearchGps: BOOL;
 	EntryR2: BOOL;
 	RunningShoesOn: BOOL;
+	Timer2: TON;
+	Outside: BOOL;
+	Timer1_2: TON;
+	GPSConnected: BOOL;
+	WarmUp:BOOL;
+	Timer2_2: TON;
+	EntryRunning: BOOL;
+	Running:BOOL;
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[
 CASE Runningstates OF
 
+//First State
 Runningstates.Preparation:
+Timer1(in:=TRUE,pt:=T#2S);
+Timer1_2(in:=TRUE,pt:=T#10S);
+
+//Set Entry in other program
 IF entryR1 = TRUE THEN
 CheckWeather := TRUE;
 entryR1 := FALSE;
 END_IF
+
 
 IF CheckWeather = TRUE AND WeatherClear = TRUE THEN
 CheckWeather := FALSE;
@@ -35,15 +50,15 @@ MusicPlaying := TRUE;
 
 END_IF
 
-IF Changeclothes = TRUE AND WatchOn= TRUE AND EarbudsConnected =TRUE AND MusicPlaying = TRUE THEN
+IF Changeclothes = TRUE AND WatchOn= TRUE AND EarbudsConnected =TRUE AND MusicPlaying = TRUE AND Timer1.Q = TRUE THEN
 ChangeClothes := FALSE;
 WatchOn:= FALSE;    
 EarbudsConnected :=FALSE;
 MusicPlaying := FALSE;
 gvl.CheckPrint := TRUE;
-
 END_IF
 
+//First check print before in second program before continuïng
 IF gvl.Layer1Good = TRUE THEN
 SearchGps := TRUE;
 EntryR2 := TRUE;	
@@ -54,14 +69,37 @@ EntryR2 := FALSE;
 RunningShoesOn:= TRUE;	
 END_IF
 
-IF RunningShoesOn = TRUE THEN
+IF RunningShoesOn = TRUE AND Timer1_2.Q THEN
 RunningStates := RunningStates.Warmup;	
+Timer1_2(in:=FALSE);
+END_IF
+
+//Second State
+RunningStates.WarmUp:
+Timer2(In:=TRUE,PT:=T#2S);
+
+IF RunningShoesOn = TRUE THEN
+Outside := TRUE;	
+END_IF
+
+IF Outside =TRUE AND GPSConnected = TRUE THEN
+WarmUp:=TRUE;
+Timer2_2(in:=TRUE,PT:=T#5S);//5 minutes warm-up
+END_IF
+
+IF timer2_2.Q = TRUE THEN
+	RunningStates := Runningstates.Running;
+	EntryRunning:=TRUE;
+	Timer2_2(in:=FALSE);
 END_IF
 
 
-RunningStates.WarmUp:
-
+Runningstates.Running:
+IF EntryRunning = TRUE THEN
+	Running := TRUE;
 	
+END_IF
+
 END_CASE
 
 ]]></ST>
@@ -69,11 +107,17 @@ END_CASE
     <LineIds Name="Running">
       <LineId Id="21" Count="0" />
       <LineId Id="15" Count="0" />
-      <LineId Id="42" Count="0" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="94" Count="0" />
       <LineId Id="5" Count="0" />
+      <LineId Id="95" Count="0" />
+      <LineId Id="111" Count="0" />
+      <LineId Id="96" Count="0" />
+      <LineId Id="98" Count="0" />
       <LineId Id="13" Count="0" />
       <LineId Id="19" Count="0" />
       <LineId Id="27" Count="2" />
+      <LineId Id="99" Count="0" />
       <LineId Id="24" Count="0" />
       <LineId Id="26" Count="0" />
       <LineId Id="30" Count="0" />
@@ -86,8 +130,8 @@ END_CASE
       <LineId Id="51" Count="2" />
       <LineId Id="50" Count="0" />
       <LineId Id="64" Count="0" />
-      <LineId Id="60" Count="0" />
       <LineId Id="38" Count="0" />
+      <LineId Id="107" Count="0" />
       <LineId Id="65" Count="0" />
       <LineId Id="57" Count="0" />
       <LineId Id="68" Count="0" />
@@ -99,11 +143,33 @@ END_CASE
       <LineId Id="59" Count="0" />
       <LineId Id="72" Count="0" />
       <LineId Id="71" Count="0" />
-      <LineId Id="73" Count="1" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="113" Count="0" />
+      <LineId Id="74" Count="0" />
       <LineId Id="76" Count="1" />
       <LineId Id="39" Count="0" />
       <LineId Id="78" Count="0" />
+      <LineId Id="104" Count="0" />
+      <LineId Id="103" Count="0" />
+      <LineId Id="105" Count="1" />
+      <LineId Id="114" Count="0" />
+      <LineId Id="109" Count="0" />
+      <LineId Id="120" Count="0" />
+      <LineId Id="123" Count="0" />
+      <LineId Id="116" Count="0" />
+      <LineId Id="125" Count="0" />
+      <LineId Id="101" Count="0" />
+      <LineId Id="126" Count="0" />
+      <LineId Id="133" Count="0" />
+      <LineId Id="128" Count="0" />
+      <LineId Id="127" Count="0" />
+      <LineId Id="129" Count="1" />
       <LineId Id="36" Count="0" />
+      <LineId Id="132" Count="0" />
+      <LineId Id="135" Count="0" />
+      <LineId Id="137" Count="0" />
+      <LineId Id="136" Count="0" />
+      <LineId Id="131" Count="0" />
       <LineId Id="18" Count="0" />
       <LineId Id="11" Count="0" />
       <LineId Id="10" Count="0" />

@@ -25,6 +25,12 @@
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\Printing.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\PrintingStates.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\RunningStates.TcDUT">
       <SubType>Code</SubType>
     </Compile>

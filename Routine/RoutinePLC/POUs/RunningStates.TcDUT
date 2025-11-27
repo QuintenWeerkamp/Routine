@@ -3,11 +3,12 @@
   <DUT Name="RunningStates" Id="{ca075d44-347a-4c24-a521-7a9b74f5dba5}">
     <Declaration><![CDATA[TYPE RunningStates :
 (	
+	Start,
 	Preparation,
 	WarmUp,
 	Running,
 	EndRun
-	) := Preparation;
+	) := Start;
 END_TYPE
 ]]></Declaration>
   </DUT>

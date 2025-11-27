@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="Printing" Id="{5d1dbc66-6bdd-4670-8314-e29a9e50c9f9}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM Printing
+VAR
+	CadModel: BOOL;
+	StlFile: BOOL;
+	Preheat: BOOL;
+	EntrySlice: BOOL;
+	PrintSettings: BOOL;
+	Slice: BOOL;
+	TransferFile: BOOL;
+	PreheatTimer :TON;
+	EntryPrint: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CASE PrintingStates OF
+
+//Prepare state for modeling and converting 3d-print	
+PrintingStates.PrepareModel:
+IF gvl.EntryPrint = TRUE THEN
+	gvl.EntryPrint := FALSE;
+	CadModel := TRUE;
+END_IF
+IF Cadmodel = TRUE THEN
+	StlFile :=TRUE;
+	Cadmodel:=FALSE;
+END_IF
+IF StlFile = TRUE THEN
+	Preheat :=TRUE;
+	StlFile:=FALSE;
+END_IF
+IF Preheat = TRUE THEN
+	PrintingStates := printingstates.SlicePrint;
+	Preheat := FALSE;
+	EntrySlice :=TRUE;
+END_IF
+
+PrintingStates.SlicePrint:
+PreheatTimer(in:=TRUE,PT:=T#10S); //preheat printer;
+IF EntrySlice = TRUE THEN
+	EntrySlice:=FALSE;
+	PrintSettings:=TRUE;	
+END_IF
+IF PrintSettings THEN
+	PrintSettings:= FALSE;
+	Slice :=TRUE;
+END_IF
+IF Slice THEN
+	Slice :=FALSE;
+	TransferFile:=TRUE;
+END_IF
+IF Transferfile = TRUE AND PreheatTimer.Q = TRUE THEN
+	TransferFile:=FALSE;
+	PrintingStates :=PrintingStates.Print;
+	EntryPrint:=TRUE;
+END_IF
+PrintingStates.Print:
+IF EntryPrint THEN
+	Entryprint :=FALSE;
+	
+END_IF
+
+END_CASE]]></ST>
+    </Implementation>
+    <LineIds Name="Printing">
+      <LineId Id="5" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="12" Count="1" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="26" Count="1" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="31" Count="1" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="8" Count="0" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="40" Count="1" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="46" Count="1" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="51" Count="1" />
+      <LineId Id="56" Count="0" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="53" Count="0" />
+      <LineId Id="59" Count="1" />
+      <LineId Id="63" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="64" Count="0" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
