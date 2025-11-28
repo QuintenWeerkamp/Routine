@@ -13,6 +13,7 @@ endif
 :Connect earbuds;
 :Play music;
 :Search GPS;
+:Check 3D-Print;
 :Put on running shoes;
 end group
 Group Warm-up
