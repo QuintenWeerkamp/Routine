@@ -6,6 +6,7 @@ VAR_GLOBAL
 	RunningStates : RunningStates :=RunningStates.Preparation;
 	CheckPrint : BOOL := FALSE;
 	Layer1Good : BOOL := FALSE;
+	Layer1Bad : Bool := False;
 	PrintingStates: PrintingStates:=PrintingStates.PrepareModel;
 	EntryPrint:BOOL:=TRUE;
 	

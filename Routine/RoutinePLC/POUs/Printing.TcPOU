@@ -12,6 +12,9 @@ VAR
 	TransferFile: BOOL;
 	PreheatTimer :TON;
 	EntryPrint: BOOL;
+	StartPrint: BOOL;
+	Checkprint1: BOOL;
+	ContinuePrint: BOOL;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -38,7 +41,7 @@ IF Preheat = TRUE THEN
 END_IF
 
 PrintingStates.SlicePrint:
-PreheatTimer(in:=TRUE,PT:=T#10S); //preheat printer;
+PreheatTimer(in:=TRUE,PT:=T#10S); //preheat printer
 IF EntrySlice = TRUE THEN
 	EntrySlice:=FALSE;
 	PrintSettings:=TRUE;	
@@ -56,11 +59,30 @@ IF Transferfile = TRUE AND PreheatTimer.Q = TRUE THEN
 	PrintingStates :=PrintingStates.Print;
 	EntryPrint:=TRUE;
 END_IF
+
+//Second state of printing
 PrintingStates.Print:
 IF EntryPrint THEN
-	Entryprint :=FALSE;
-	
+	Entryprint :=FALSE;	
+	StartPrint := TRUE;
 END_IF
+IF Startprint THEN
+	Startprint := FALSE;
+	Checkprint1 := TRUE;
+END_IF
+
+IF Checkprint1 THEN
+	IF gvl.Layer1Good = TRUE THEN
+		Checkprint1:=FALSE;
+		ContinuePrint := TRUE;
+	ELSIF gvl.Layer1Bad = TRUE THEN
+	checkprint1 := FALSE;
+	PrintingStates := printingstates.SlicePrint; //If the first layer failed, go back to the slicing settings	
+	END_IF
+END_IF
+
+
+
 
 END_CASE]]></ST>
     </Implementation>
@@ -100,10 +122,25 @@ END_CASE]]></ST>
       <LineId Id="56" Count="0" />
       <LineId Id="61" Count="0" />
       <LineId Id="53" Count="0" />
+      <LineId Id="92" Count="1" />
       <LineId Id="59" Count="1" />
       <LineId Id="63" Count="0" />
-      <LineId Id="65" Count="0" />
+      <LineId Id="78" Count="0" />
       <LineId Id="64" Count="0" />
+      <LineId Id="81" Count="0" />
+      <LineId Id="85" Count="0" />
+      <LineId Id="89" Count="0" />
+      <LineId Id="86" Count="0" />
+      <LineId Id="94" Count="0" />
+      <LineId Id="91" Count="0" />
+      <LineId Id="95" Count="0" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="100" Count="0" />
+      <LineId Id="99" Count="0" />
+      <LineId Id="102" Count="1" />
+      <LineId Id="98" Count="0" />
+      <LineId Id="96" Count="0" />
+      <LineId Id="82" Count="2" />
       <LineId Id="58" Count="0" />
       <LineId Id="7" Count="0" />
     </LineIds>
