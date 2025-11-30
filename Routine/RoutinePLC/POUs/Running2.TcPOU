@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.15">
+  <POU Name="Running2" Id="{595a4fa8-c535-4084-8182-3622c9324e38}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM Running2
+VAR
+	entryR1:BOOL:=FALSE;	
+	CheckWeather: BOOL;
+	WeatherClear: BOOL := TRUE;
+	Timer1 : TON ;
+	RunTime:TON;
+	CooldownTime:TON;
+	ChangeClothes: BOOL;
+	WatchOn: BOOL;
+	EarbudsConnected: BOOL;
+	MusicPlaying: BOOL;
+	SearchGps: BOOL;
+	EntryR2: BOOL;
+	RunningShoesOn: BOOL;
+	Timer2: TON;
+	Outside: BOOL;
+	Timer1_2: TON;
+	GPSConnected: BOOL;
+	WarmUp:BOOL;
+	Timer2_2: TON;
+	EntryRunning: BOOL;
+	Running:BOOL;
+	PrepFinished: BOOL;
+	EntryWarmUp: BOOL;
+	CheckDistance: INT;
+	RunFinished: BOOL;
+	EndRunEntry: BOOL;
+	Cooldown: BOOL;
+	GoHome: BOOL;
+	Rest: BOOL;
+	DrinkWater: BOOL;
+	Shower: BOOL;
+	RunstateStart: BOOL;
+	RunstatePreperation: BOOL;
+	RunstateWarmup: BOOL;
+	RunstateRunning: BOOL;
+	RunstateEndRun: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CASE gvl.RunState OF 
+Runningstates.Start:
+RunstateStart:=TRUE;
+RunstatePreperation:=FALSE;
+RunstateWarmup:=FALSE;
+RunstateRunning:=FALSE;
+RunstateEndRun:=FALSE;
+
+IF gvl.PrintStarted THEN //Check for the printer to have started in printing routine
+	gvl.PrintStarted:=FALSE;
+	EntryR1:=TRUE;
+	gvl.RunState:=Runningstates.Preparation;
+END_IF
+
+//First State of running
+Runningstates.Preparation:
+RunstateStart:=FALSE;
+RunstatePreperation:=TRUE;
+RunstateWarmup:=FALSE;
+RunstateRunning:=FALSE;
+RunstateEndRun:=FALSE;
+Timer1(in:=TRUE,pt:=T#2S);
+Timer1_2(in:=TRUE,pt:=T#10S);
+
+IF EntryR1 = TRUE THEN
+CheckWeather := TRUE;
+EntryR1 := FALSE;
+END_IF
+
+
+IF CheckWeather = TRUE AND WeatherClear = TRUE THEN //Use button in visualization to set WeatherClear
+CheckWeather := FALSE;
+ChangeClothes := TRUE;
+WatchOn:= TRUE;
+EarbudsConnected :=TRUE;
+MusicPlaying := TRUE;
+END_IF
+
+IF Changeclothes = TRUE AND WatchOn= TRUE AND EarbudsConnected =TRUE AND MusicPlaying = TRUE AND Timer1.Q = TRUE THEN
+ChangeClothes := FALSE;
+WatchOn:= FALSE;    
+EarbudsConnected :=FALSE;
+MusicPlaying := FALSE;
+Timer1.in :=FALSE;
+PrepFinished :=TRUE;
+END_IF
+
+//First check print in second program before continuïng
+IF gvl.Layer1Good = TRUE AND PrepFinished =TRUE THEN
+SearchGps := TRUE;
+EntryR2 := TRUE;
+PrepFinished:=FALSE;	
+END_IF
+
+IF SearchGPS = TRUE AND EntryR2 = TRUE THEN
+EntryR2 := FALSE;
+RunningShoesOn:= TRUE;	
+END_IF
+
+IF RunningShoesOn = TRUE AND Timer1_2.Q THEN
+gvl.RunState := RunningStates.Warmup;	
+Timer1_2(in:=FALSE);
+EntryWarmUp:=TRUE;
+END_IF
+
+//Second State of running
+RunningStates.WarmUp:
+RunstateStart:=FALSE;
+RunstatePreperation:=FALSE;
+RunstateWarmup:=TRUE;
+RunstateRunning:=FALSE;
+RunstateEndRun:=FALSE;
+Timer2(In:=TRUE,PT:=T#5M);
+
+IF EntryWarmUp THEN
+Outside := TRUE;	
+END_IF
+
+IF Outside =TRUE AND GPSConnected = TRUE THEN //Button in visualization for gpsconnected
+WarmUp:=TRUE;
+Timer2_2(in:=TRUE,PT:=T#5S);//5 minutes warm-up, set to seconds for time-purpose
+END_IF
+
+IF timer2_2.Q = TRUE AND warmup THEN
+	gvl.RunState := Runningstates.Running;
+	EntryRunning:=TRUE;
+	Timer2_2(in:=FALSE);
+	Warmup:=FALSE;
+END_IF
+
+//Third State of running, the actual run
+Runningstates.Running:
+RunstateStart:=FALSE;
+RunstatePreperation:=FALSE;
+RunstateWarmup:=FALSE;
+RunstateRunning:=TRUE;
+RunstateEndRun:=FALSE;
+Runtime(IN:=TRUE,pt:=T#50M);
+IF EntryRunning = TRUE THEN
+	Running := TRUE;
+	entryRunning:=FALSE;
+END_IF
+IF Running AND Runtime.ET = T#50S THEN //Used time instead of distance for this program
+RunFinished:=TRUE;
+Runtime.IN:=TRUE;
+END_IF
+IF Runfinished THEN
+	RunFinished:=FALSE;
+	gvl.RunState:=Runningstates.EndRun;
+	EndRunEntry:=TRUE;
+END_IF
+
+Runningstates.EndRun:
+RunstateStart:=FALSE;
+RunstatePreperation:=FALSE;
+RunstateWarmup:=FALSE;
+RunstateRunning:=FALSE;
+RunstateEndRun:=TRUE;
+IF EndRunEntry THEN	
+Cooldown:= TRUE;
+CoolDownTime(in:=TRUE,pt:=T#5M);
+END_IF
+IF Cooldown AND cooldowntime.Q THEN
+	Cooldowntime.IN:=FALSE;
+	Cooldown:=FALSE;
+	EndrunEntry:=FALSE;
+	GoHome:=TRUE;
+END_IF
+IF GoHome THEN
+	GoHome:=FALSE;
+	Rest:=TRUE;
+	RunningShoesOn:=FALSE;
+END_IF
+IF Rest=TRUE AND RunningShoesOn = FALSE THEN
+	Rest:=FALSE;
+	DrinkWater:=TRUE;
+	
+END_IF
+IF DrinkWater AND gvl.PrintFinished THEN
+	Shower :=TRUE;
+	Drinkwater :=FALSE;
+	gvl.PrintFinished:=FALSE;
+END_IF
+IF Shower THEN
+	shower:=FALSE;
+	gvl.RunState:=RunningStates.Start;
+END_IF
+END_CASE]]></ST>
+    </Implementation>
+    <LineIds Name="Running2">
+      <LineId Id="485" Count="1" />
+      <LineId Id="708" Count="0" />
+      <LineId Id="711" Count="0" />
+      <LineId Id="709" Count="0" />
+      <LineId Id="713" Count="0" />
+      <LineId Id="715" Count="0" />
+      <LineId Id="717" Count="0" />
+      <LineId Id="487" Count="7" />
+      <LineId Id="720" Count="3" />
+      <LineId Id="719" Count="0" />
+      <LineId Id="495" Count="45" />
+      <LineId Id="725" Count="3" />
+      <LineId Id="724" Count="0" />
+      <LineId Id="541" Count="19" />
+      <LineId Id="730" Count="3" />
+      <LineId Id="729" Count="0" />
+      <LineId Id="561" Count="15" />
+      <LineId Id="735" Count="3" />
+      <LineId Id="734" Count="0" />
+      <LineId Id="577" Count="28" />
+      <LineId Id="363" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

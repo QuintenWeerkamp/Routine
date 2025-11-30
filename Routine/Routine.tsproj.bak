@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.65">
-	<Project ProjectGUID="{84F71A40-6463-44AC-B89E-5708B46A5483}" Target64Bit="true" ShowHideConfigurations="#x6">
+	<Project ProjectGUID="{84F71A40-6463-44AC-B89E-5708B46A5483}" TargetNetId="39.231.85.117.1.1" Target64Bit="true" ShowHideConfigurations="#x6">
 		<System>
 			<Tasks>
 				<Task Id="3" Priority="20" CycleTime="100000" AmsPort="350" AdtTasks="true">
@@ -10,15 +10,23 @@
 		</System>
 		<Plc>
 			<Project GUID="{E6A869AD-A4C7-4D34-B7E8-7809B9F4D960}" Name="RoutinePLC" PrjFilePath="RoutinePLC\RoutinePLC.plcproj" TmcFilePath="RoutinePLC\RoutinePLC.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="RoutinePLC\RoutinePLC.tmc" TmcHash="{9026B483-005A-E4E0-4775-32936535D7AE}">
 					<Name>RoutinePLC Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Contexts>
 						<Context>
-							<Id>1</Id>
-							<Name>Default</Name>
+							<Id>0</Id>
+							<Name>PlcTask</Name>
+							<ManualConfig>
+								<OTCID>#x02010030</OTCID>
+							</ManualConfig>
+							<Priority>20</Priority>
+							<CycleTime>10000000</CycleTime>
 						</Context>
 					</Contexts>
+					<TaskPouOids>
+						<TaskPouOid Prio="20" OTCID="#x08502001"/>
+					</TaskPouOids>
 				</Instance>
 			</Project>
 		</Plc>

@@ -3,13 +3,14 @@
   <GVL Name="GVL" Id="{f0f7fe03-104c-4ac5-8c8b-0428b6b36959}">
     <Declaration><![CDATA[{attribute 'qualified_only'}
 VAR_GLOBAL
-	RunningStates : RunningStates :=RunningStates.Preparation;
+	RunState : RunningStates := runningstates.Start;
+	PrintState : PrintingStates := printingstates.PrepareModel;
 	CheckPrint : BOOL := FALSE;
 	Layer1Good : BOOL := FALSE;
 	Layer1Bad : Bool := False;
-	PrintingStates: PrintingStates:=PrintingStates.PrepareModel;
 	EntryPrint:BOOL:=TRUE;
-	
+	PrintStarted: BOOL := FALSE;
+	PrintFinished: BOOL := FALSE;
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>

@@ -15,13 +15,30 @@ VAR
 	StartPrint: BOOL;
 	Checkprint1: BOOL;
 	ContinuePrint: BOOL;
+	PrintComplete: BOOL;
+	FinishPrintEntry: BOOL;
+	RemovePrint: BOOL;
+	CleanBed: BOOL;
+	PrintSucceeded: BOOL;
+	PrintFinished: BOOL;
+	PrintFailed:BOOL;
+	PrintStatePrepareModel: BOOL;
+	PrintStateSlicePrint: BOOL;
+	PrintStatePrint: BOOL;
+	PrintStateFinishPrint: BOOL;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[CASE PrintingStates OF
+      <ST><![CDATA[
+CASE gvl.PrintState OF
 
 //Prepare state for modeling and converting 3d-print	
 PrintingStates.PrepareModel:
+PrintStatePrepareModel:=TRUE;
+PrintStateSlicePrint:=FALSE;
+PrintStatePrint:=FALSE;
+PrintStateFinishPrint:=FALSE;
+
 IF gvl.EntryPrint = TRUE THEN
 	gvl.EntryPrint := FALSE;
 	CadModel := TRUE;
@@ -35,12 +52,18 @@ IF StlFile = TRUE THEN
 	StlFile:=FALSE;
 END_IF
 IF Preheat = TRUE THEN
-	PrintingStates := printingstates.SlicePrint;
+	gvl.PrintState := printingstates.SlicePrint;
 	Preheat := FALSE;
 	EntrySlice :=TRUE;
 END_IF
 
+//Second State, Slice the print
 PrintingStates.SlicePrint:
+PrintStatePrepareModel:=FALSE;
+PrintStateSlicePrint:=TRUE;
+PrintStatePrint:=FALSE;
+PrintStateFinishPrint:=FALSE;
+
 PreheatTimer(in:=TRUE,PT:=T#10S); //preheat printer
 IF EntrySlice = TRUE THEN
 	EntrySlice:=FALSE;
@@ -56,12 +79,17 @@ IF Slice THEN
 END_IF
 IF Transferfile = TRUE AND PreheatTimer.Q = TRUE THEN
 	TransferFile:=FALSE;
-	PrintingStates :=PrintingStates.Print;
+	GVL.PrintState :=PrintingStates.Print;
 	EntryPrint:=TRUE;
 END_IF
 
-//Second state of printing
+//Third state of printing
 PrintingStates.Print:
+PrintStatePrepareModel:=FALSE;
+PrintStateSlicePrint:=FALSE;
+PrintStatePrint:=TRUE;
+PrintStateFinishPrint:=FALSE;
+
 IF EntryPrint THEN
 	Entryprint :=FALSE;	
 	StartPrint := TRUE;
@@ -69,28 +97,71 @@ END_IF
 IF Startprint THEN
 	Startprint := FALSE;
 	Checkprint1 := TRUE;
+	gvl.PrintStarted:=TRUE; //Signal to start Running routine
 END_IF
 
-IF Checkprint1 THEN
-	IF gvl.Layer1Good = TRUE THEN
-		Checkprint1:=FALSE;
+IF Checkprint1 THEN 
+	IF gvl.Layer1Good = TRUE THEN //If the first layer is good, continue proces and start running proces
+		Checkprint1:=FALSE;			//Button in visualization to make true
 		ContinuePrint := TRUE;
+		
 	ELSIF gvl.Layer1Bad = TRUE THEN
 	checkprint1 := FALSE;
-	PrintingStates := printingstates.SlicePrint; //If the first layer failed, go back to the slicing settings	
+	GVL.PrintState := printingstates.SlicePrint; //If the first layer failed, go back to the slicing settings	
 	END_IF
 END_IF
+IF ContinuePrint THEN
+	ContinuePrint:=FALSE;
+	PrintComplete:= TRUE;
+END_IF
+IF PrintComplete THEN
+	GVL.PrintState:=PrintingStates.FinishPrint;
+	PrintComplete:=FALSE;
+	FinishPrintEntry:=TRUE;
+END_IF
 
-
-
+//Last state of printing proces
+PrintingStates.FinishPrint:
+PrintStatePrepareModel:=FALSE;
+PrintStateSlicePrint:=FALSE;
+PrintStatePrint:=FALSE;
+PrintStateFinishPrint:=TRUE;
+IF FinishPrintEntry THEN
+	FinishPrintEntry:=FALSE;
+	RemovePrint:=TRUE;
+END_IF
+IF Removeprint THEN
+	Removeprint:=FALSE;
+	CleanBed:=TRUE;
+END_IF
+IF CleanBed THEN
+	IF PrintSucceeded THEN //Button in visualization to make true
+		PrintFinished:=TRUE;
+		CleanBed:=FALSE;
+	ELSIF PrintFailed THEN
+		gvl.PrintState:=PrintingStates.SlicePrint;
+		CleanBed:=FALSE;
+		EntrySlice:= TRUE;
+	END_IF
+END_IF
+IF printFinished THEN
+	gvl.PrintFinished:=TRUE;
+	PrintFinished:=FALSE;
+	gvl.Printstate:=PrintingStates.PrepareModel;
+END_IF
 
 END_CASE]]></ST>
     </Implementation>
     <LineIds Name="Printing">
+      <LineId Id="138" Count="0" />
       <LineId Id="5" Count="0" />
       <LineId Id="30" Count="0" />
       <LineId Id="6" Count="0" />
       <LineId Id="9" Count="0" />
+      <LineId Id="186" Count="1" />
+      <LineId Id="189" Count="0" />
+      <LineId Id="191" Count="0" />
+      <LineId Id="193" Count="0" />
       <LineId Id="12" Count="1" />
       <LineId Id="15" Count="0" />
       <LineId Id="14" Count="0" />
@@ -106,7 +177,11 @@ END_CASE]]></ST>
       <LineId Id="29" Count="0" />
       <LineId Id="33" Count="0" />
       <LineId Id="28" Count="0" />
+      <LineId Id="124" Count="0" />
       <LineId Id="31" Count="1" />
+      <LineId Id="198" Count="2" />
+      <LineId Id="196" Count="0" />
+      <LineId Id="195" Count="0" />
       <LineId Id="54" Count="0" />
       <LineId Id="8" Count="0" />
       <LineId Id="35" Count="0" />
@@ -123,24 +198,61 @@ END_CASE]]></ST>
       <LineId Id="61" Count="0" />
       <LineId Id="53" Count="0" />
       <LineId Id="92" Count="1" />
-      <LineId Id="59" Count="1" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="204" Count="2" />
+      <LineId Id="202" Count="0" />
+      <LineId Id="201" Count="0" />
+      <LineId Id="60" Count="0" />
       <LineId Id="63" Count="0" />
       <LineId Id="78" Count="0" />
       <LineId Id="64" Count="0" />
       <LineId Id="81" Count="0" />
       <LineId Id="85" Count="0" />
       <LineId Id="89" Count="0" />
+      <LineId Id="180" Count="0" />
       <LineId Id="86" Count="0" />
       <LineId Id="94" Count="0" />
       <LineId Id="91" Count="0" />
       <LineId Id="95" Count="0" />
       <LineId Id="97" Count="0" />
       <LineId Id="100" Count="0" />
+      <LineId Id="126" Count="0" />
       <LineId Id="99" Count="0" />
       <LineId Id="102" Count="1" />
       <LineId Id="98" Count="0" />
       <LineId Id="96" Count="0" />
-      <LineId Id="82" Count="2" />
+      <LineId Id="84" Count="0" />
+      <LineId Id="141" Count="0" />
+      <LineId Id="143" Count="0" />
+      <LineId Id="142" Count="0" />
+      <LineId Id="147" Count="1" />
+      <LineId Id="151" Count="0" />
+      <LineId Id="156" Count="0" />
+      <LineId Id="149" Count="0" />
+      <LineId Id="153" Count="0" />
+      <LineId Id="152" Count="0" />
+      <LineId Id="154" Count="0" />
+      <LineId Id="209" Count="2" />
+      <LineId Id="207" Count="0" />
+      <LineId Id="155" Count="0" />
+      <LineId Id="158" Count="0" />
+      <LineId Id="160" Count="0" />
+      <LineId Id="159" Count="0" />
+      <LineId Id="163" Count="1" />
+      <LineId Id="166" Count="0" />
+      <LineId Id="165" Count="0" />
+      <LineId Id="146" Count="0" />
+      <LineId Id="171" Count="1" />
+      <LineId Id="212" Count="0" />
+      <LineId Id="173" Count="0" />
+      <LineId Id="177" Count="0" />
+      <LineId Id="213" Count="0" />
+      <LineId Id="179" Count="0" />
+      <LineId Id="176" Count="0" />
+      <LineId Id="170" Count="0" />
+      <LineId Id="181" Count="1" />
+      <LineId Id="184" Count="1" />
+      <LineId Id="183" Count="0" />
       <LineId Id="58" Count="0" />
       <LineId Id="7" Count="0" />
     </LineIds>
